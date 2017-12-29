@@ -11,6 +11,7 @@ node {
 
     stage('Tag Image') {
         openshiftTag (
+            namespace: 'sock-shop',
             sourceStream: 'front-end',
             sourceTag: 'latest',
             destinationStream: 'front-end',
