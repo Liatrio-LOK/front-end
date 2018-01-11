@@ -11,11 +11,11 @@ node {
 
     stage('Tag Image') {
         openshiftTag (
-            sourceStream: 'front-end',
-            sourceTag: 'latest',
+            srcStream: 'front-end',
+            srcTag: env.BRANCH_NAME,
             destinationStream: 'front-end',
-            destinationTag: env.BRANCH_NAME,
-            destinationNamespace: 'sock-shop'
+            destinationTag: 'latest',
+            destinationNamespace: 'ci'
         )
     }
 
