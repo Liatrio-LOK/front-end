@@ -1,7 +1,7 @@
 node {
     stage('Build Image') {
         openshiftBuild (
-            namespace: 'sock-shop', 
+            namespace: 'ci', 
             bldCfg: 'front-end-build', 
             checkForTriggeredDeployments: 'true', 
             showBuildLogs: 'true', 
