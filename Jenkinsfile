@@ -9,7 +9,7 @@ node {
         )
     }
 
-    stage('Tag Image') {
+    stage('Promote Image') {
         openshiftTag (
             srcStream: 'front-end',
             srcTag: env.BRANCH_NAME,
