@@ -9,6 +9,24 @@ node {
         )
     }
 
+    stage('Verify Build') {
+        openshiftVerifyBuild (
+            namespace: 'ci', 
+            bldCfg: 'front-end-build', 
+            checkForTriggeredDeployments: 'true', 
+            verbose: 'true'
+        )
+    }
+
+    stage('Verify Deployment') {
+        openshiftVerifyDeployment (
+            namespace: env.BRANCH_NAME.toLowerCase(), 
+            depCfg: 'front-end', 
+            verifyReplicaCount: 'true', 
+            verbose: 'true'
+        )
+    }
+
     stage('Promote Image') {
         openshiftTag (
             srcStream: 'front-end',
