@@ -27,6 +27,12 @@ node {
         )
     }
 
+    stage('Approve Promotion') {
+        steps {
+          input 'Deploy to Dev?'
+        }
+    }
+
     stage('Promote Image') {
         openshiftTag (
             srcStream: 'front-end',
