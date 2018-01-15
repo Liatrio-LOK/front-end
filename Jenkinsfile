@@ -25,12 +25,7 @@ node {
             verifyReplicaCount: 'true', 
             verbose: 'true'
         )
-    }
-
-    stage('Approve Promotion') {
-        steps {
-          input 'Deploy to Dev?'
-        }
+        input 'Deploy to Dev?'
     }
 
     stage('Promote Image') {
