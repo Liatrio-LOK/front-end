@@ -1,22 +1,21 @@
 node {
-    stage('Build Image') {
-        openshiftBuild (
-            namespace: 'sock-shop', 
-            bldCfg: 'front-end-build', 
-            checkForTriggeredDeployments: 'true', 
-            showBuildLogs: 'true', 
-            verbose: 'false'
-        )
-    }
+    stage('Create Environment') {
+        script {
+            sh '''
+                folder=`echo $JOB_NAME | cut -d/ -f1 | awk '{print tolower($0)}'`
+                branch=`echo $BRANCH_NAME | awk '{print tolower($0)}'`
+                oc projects | grep $folder-$branch
+                #create project if it doesn't already exist
+                if [ $? -ne 0 ]; then
+                    oc new-project $folder-$branch &&
+                    #we assume people are in the group which corresponds to the folder name
+                    oc adm policy add-role-to-group admin $folder --namespace=$folder-$branch &&
+                    wget https://raw.githubusercontent.com/Liatrio-LOK/microservices-demo/master/deploy/openshift/templates/full_stack_template.yaml &&
+                    oc create -f full_stack_template.yaml &&
+                    rm full_stack_template.yaml
 
-    stage('Tag Image') {
-        openshiftTag (
-            sourceStream: 'front-end',
-            sourceTag: 'latest',
-            destinationStream: 'front-end',
-            destinationTag: env.BRANCH_NAME,
-            destinationNamespace: 'sock-shop'
-        )
+                fi 
+            '''
+        }
     }
-
 }
