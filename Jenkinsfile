@@ -17,22 +17,17 @@
         )
     }
 }*/
-podTemplate(label: 'node', cloud: 'openshift', containers: [
-    containerTemplate(name: 'nodejs', image: 'node:6-alpine', ttyEnabled: true, command: 'cat'),
-  ]) {
-  node('node') {
-      stage('Selenium test') {
-        checkout scm
-        container('nodejs'){
+  node('ruby') {
+    stage('Selenium test') {
+      checkout scm
+        container('jnlp') {
           stage('run test') {
-            sh 'npm install'
-            sh 'node front-end-test.js'
+            sh 'ruby front-end-test-grid.rb'
             input 'promote image?'
           }
         }
       }
   }
-}
 node {
     stage('Promote Image') {
         openshiftTag (
