@@ -22,6 +22,7 @@ describe 'Sock-Shop' do
 
   describe 'test title' do
     it 'should show WeaveSocks title' do
+        puts @driver.title
       assert @driver.title == 'WeaveSocks'
     end
   end
