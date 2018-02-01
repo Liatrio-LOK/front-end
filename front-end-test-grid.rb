@@ -20,9 +20,14 @@ describe 'Sock-Shop' do
     @driver.quit
   end
 
-  describe 'when homepage is available' do
-    it 'should show correct page title' do
+  describe 'test title' do
+    it 'should show WeaveSocks title' do
       assert @driver.title == 'WeaveSocks'
+    end
+  end
+  describe 'test title' do
+    it 'should not show Google as the title' do
+      assert @driver.title == 'Google'
     end
   end
 end
