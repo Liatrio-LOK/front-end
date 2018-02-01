@@ -17,6 +17,9 @@
         )
     }
 }*/
+podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
+    containerTemplate(name: 'selenium-firefox', image: 'liatrio/selenium-firefox', ttyEnabled: true, command: 'cat'),
+  ]) {
   node ('slave-pod') {
     stage('Build Image') {
         openshiftBuild (
@@ -39,6 +42,7 @@
         checkout scm
         container('selenium-firefox') {
           stage('run test') {
+            sh 'gem install selenium-webdriver'
             sh 'ruby front-end-test-grid.rb'
             input 'promote image?'
           }
@@ -54,6 +58,7 @@
         )
     }
   }
+}
 /*node {
     stage('Promote Image') {
         openshiftTag (
