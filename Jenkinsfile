@@ -17,6 +17,9 @@
         )
     }
 }*/
+podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
+    containerTemplate(name: 'selenium-firefox', image: 'liatrio/selenium-firefox', ttyEnabled: true, command: 'cat'),
+  ]) {
   node ('slave-pod') {
     stage('Build Image') {
         openshiftBuild (
@@ -54,6 +57,7 @@
         )
     }
   }
+}
 /*node {
     stage('Promote Image') {
         openshiftTag (
