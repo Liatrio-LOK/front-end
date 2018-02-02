@@ -42,6 +42,7 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
         checkout scm
         container('selenium-firefox') {
           stage('run test') {
+            sh 'gem install selenium-webdriver'
             sh 'ruby front-end-test-grid.rb'
             input 'promote image?'
           }
