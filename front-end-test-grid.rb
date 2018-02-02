@@ -4,9 +4,9 @@ require 'minitest/autorun'
 describe 'Sock-Shop' do
   before do
     @driver = Selenium::WebDriver.for(
-      :remote,
-      url: 'http://selenium-hub:4444/wd/hub',
-      desired_capabilities: :firefox) # look into desired_capabilities. browserName?
+        :remote,
+        url: 'http://selenium-hub:4444/wd/hub',
+        desired_capabilities: :chrome)
     @driver.navigate.to 'http://front-end:8079'
     #@driver.manage.timeouts.implicit_wait = 30
   end

@@ -18,7 +18,7 @@
     }
 }*/
 podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
-    containerTemplate(name: 'selenium-firefox', image: 'liatrio/selenium-firefox', ttyEnabled: true, command: 'cat'),
+    containerTemplate(name: 'ruby', image: 'ruby:2.2', ttyEnabled: true, command: 'cat'),
   ]) {
   node ('slave-pod') {
     stage('Build Image') {
@@ -40,9 +40,9 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
     }
     stage('Selenium test') {
         checkout scm
-        container('selenium-firefox') {
+        container('ruby') {
           stage('run test') {
-            sh 'gem install selenium-webdriver'
+            sh 'gem install minitest selenium-webdriver'
             sh 'ruby front-end-test-grid.rb'
             input 'promote image?'
           }
