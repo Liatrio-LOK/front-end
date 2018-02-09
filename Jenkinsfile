@@ -18,7 +18,7 @@
     }
 }*/
 podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
-    containerTemplate(name: 'ruby', image: 'ruby:2.2', ttyEnabled: true, command: 'cat'),
+    containerTemplate(name: 'selenium', image: 'ruby', ttyEnabled: true, command: 'cat'),
   ]) {
   node ('slave-pod') {
     stage('Build Image') {
@@ -31,7 +31,8 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
         )
     }
 
-    stage('Verify Build') { openshiftVerifyBuild (
+    stage('Verify Build') {
+            openshiftVerifyBuild (
             namespace: 'sock-shop',
             bldCfg: 'front-end-build',
             checkForTriggeredDeployments: 'true',
@@ -40,7 +41,7 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
     }
     stage('Selenium test') {
         checkout scm
-        container('ruby') {
+        container('selenium') {
           stage('run test') {
             sh 'gem install minitest selenium-webdriver'
             sh 'ruby front-end-test-grid.rb'

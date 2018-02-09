@@ -1,0 +1,105 @@
+#!groovy
+podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
+    containerTemplate(name: 'selenium', image: 'ruby', ttyEnabled: true, command: 'cat'),
+  ]) {
+  node ('slave-pod') {
+    stage('Build Image') {
+        openshiftBuild (
+            namespace: 'jenkins',
+            bldCfg: 'front-end-build',
+            checkForTriggeredDeployments: 'true',
+            showBuildLogs: 'true',
+            verbose: 'false'
+        )
+    }
+    stage('Verify Build') {
+            openshiftVerifyBuild (
+            namespace: 'jenkins',
+            bldCfg: 'front-end-build',
+            checkForTriggeredDeployments: 'true',
+            verbose: 'true'
+        )
+    }
+    stage('Smoke test image') {
+        checkout scm
+        container('selenium') {
+          stage('prep pod') {
+            sh 'gem install minitest selenium-webdriver'
+          }
+          stage('run test') {
+            sh 'ruby front-end-test-grid.rb'
+          }
+        }
+    }
+    stage('Promote to dev') {
+        openshiftTag (
+            srcStream: 'front-end',
+            srcTag: 'latest',
+            destinationStream: 'front-end',
+            destinationTag: 'dev',
+            destinationNamespace: 'jenkins'
+        )
+    }
+    stage('Smoke test dev') {
+        checkout scm
+        container('selenium') {
+          stage('run test') {
+            sh 'ruby front-end-test-grid.rb'
+          }
+        }
+    }
+    stage('Promote to qa') {
+        openshiftTag (
+            srcStream: 'front-end',
+            srcTag: 'dev',
+            destinationStream: 'front-end',
+            destinationTag: 'qa',
+            destinationNamespace: 'jenkins'
+        )
+    }
+    stage('Smoke test qa') {
+        checkout scm
+        container('selenium') {
+          stage('run test') {
+            sh 'ruby front-end-test-grid.rb'
+            input 'promote image?'
+          }
+        }
+    }
+    stage('Promote to staging') {
+        openshiftTag (
+            srcStream: 'front-end',
+            srcTag: 'qa',
+            destinationStream: 'front-end',
+            destinationTag: 'staging',
+            destinationNamespace: 'jenkins'
+        )
+    }
+    stage('Smoke test staging') {
+        checkout scm
+        container('selenium') {
+          stage('run test') {
+            sh 'ruby front-end-test-grid.rb'
+            input 'promote image?'
+          }
+        }
+    }
+    stage('Promote to prod') {
+        openshiftTag (
+            srcStream: 'front-end',
+            srcTag: 'staging',
+            destinationStream: 'front-end',
+            destinationTag: 'prod',
+            destinationNamespace: 'jenkins'
+        )
+    }
+    stage('Smoke test prod') {
+        checkout scm
+        container('selenium') {
+          stage('run test') {
+            sh 'ruby front-end-test-grid.rb'
+          }
+        }
+    }
+  }
+}
