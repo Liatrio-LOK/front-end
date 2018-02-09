@@ -20,17 +20,6 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
             verbose: 'true'
         )
     }
-    stage('Smoke test image') {
-        checkout scm
-        container('selenium') {
-          stage('prep pod') {
-            sh 'gem install minitest selenium-webdriver'
-          }
-          stage('run test') {
-            sh 'ruby front-end-test-grid.rb'
-          }
-        }
-    }
     stage('Promote to dev') {
         openshiftTag (
             srcStream: 'front-end',
@@ -43,8 +32,11 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
     stage('Smoke test dev') {
         checkout scm
         container('selenium') {
+          stage('prep pod') {
+            sh 'gem install minitest selenium-webdriver'
+          }
           stage('run test') {
-            sh 'ruby front-end-test-grid.rb'
+            sh 'ruby front-end-test-grid.rb 30011'
           }
         }
     }
@@ -58,11 +50,11 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
         )
     }
     stage('Smoke test qa') {
-        checkout scm
         container('selenium') {
           stage('run test') {
-            sh 'ruby front-end-test-grid.rb'
-            input 'promote image?'
+            sh 'sleep 5'
+            sh 'ruby front-end-test-grid.rb 30012'
+            input 'promote to staging?'
           }
         }
     }
@@ -76,11 +68,11 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
         )
     }
     stage('Smoke test staging') {
-        checkout scm
         container('selenium') {
           stage('run test') {
-            sh 'ruby front-end-test-grid.rb'
-            input 'promote image?'
+            sh 'sleep 5'
+            sh 'ruby front-end-test-grid.rb 30013'
+            input 'promote to prod?'
           }
         }
     }
@@ -94,10 +86,10 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
         )
     }
     stage('Smoke test prod') {
-        checkout scm
         container('selenium') {
           stage('run test') {
-            sh 'ruby front-end-test-grid.rb'
+            sh 'sleep 5'
+            sh 'ruby front-end-test-grid.rb 30014'
           }
         }
     }

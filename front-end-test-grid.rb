@@ -5,9 +5,9 @@ describe 'Sock-Shop' do
   before do
     @driver = Selenium::WebDriver.for(
         :remote,
-        url: 'http://selenium-hub:4444/wd/hub',
+        url: 'http://192.168.64.15:30002/wd/hub',
         desired_capabilities: :chrome)
-    @driver.navigate.to 'http://front-end:8079'
+    @driver.navigate.to "http://192.168.64.15:#{ARGV[0]}"
     #@driver.manage.timeouts.implicit_wait = 30
   end
 
@@ -21,9 +21,11 @@ describe 'Sock-Shop' do
     end
   end
 
+=begin
   describe 'test title' do
     it 'should not show Google as the title' do
       assert @driver.title == 'Google'
     end
   end
+=end
 end
