@@ -26,7 +26,7 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
             srcTag: 'latest',
             destinationStream: 'front-end',
             destinationTag: 'dev',
-            destinationNamespace: 'jenkins'
+            destinationNamespace: 'dev'
         )
     }
     stage('Smoke test dev') {
@@ -36,42 +36,7 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
             sh 'gem install minitest selenium-webdriver'
           }
           stage('run test') {
-            sh 'ruby front-end-test-grid.rb $(minishift ip) 30011'
-          }
-        }
-    }
-    stage('Promote to qa') {
-        openshiftTag (
-            srcStream: 'front-end',
-            srcTag: 'dev',
-            destinationStream: 'front-end',
-            destinationTag: 'qa',
-            destinationNamespace: 'jenkins'
-        )
-    }
-    stage('Smoke test qa') {
-        container('selenium') {
-          stage('run test') {
-            sh 'sleep 5'
-            sh 'ruby front-end-test-grid.rb $(minishift ip) 30012'
-            input 'promote to staging?'
-          }
-        }
-    }
-    stage('Promote to staging') {
-        openshiftTag (
-            srcStream: 'front-end',
-            srcTag: 'qa',
-            destinationStream: 'front-end',
-            destinationTag: 'staging',
-            destinationNamespace: 'jenkins'
-        )
-    }
-    stage('Smoke test staging') {
-        container('selenium') {
-          stage('run test') {
-            sh 'sleep 5'
-            sh 'ruby front-end-test-grid.rb $(minishift ip) 30013'
+            sh 'ruby front-end-test-grid.rb 30011'
             input 'promote to prod?'
           }
         }
@@ -79,17 +44,17 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
     stage('Promote to prod') {
         openshiftTag (
             srcStream: 'front-end',
-            srcTag: 'staging',
+            srcTag: 'dev',
             destinationStream: 'front-end',
             destinationTag: 'prod',
-            destinationNamespace: 'jenkins'
+            destinationNamespace: 'prod'
         )
     }
     stage('Smoke test prod') {
         container('selenium') {
           stage('run test') {
             sh 'sleep 5'
-            sh 'ruby front-end-test-grid.rb $(minishift ip) 30014'
+            sh 'ruby front-end-test-grid.rb 30014'
           }
         }
     }

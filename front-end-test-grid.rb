@@ -5,9 +5,9 @@ describe 'Sock-Shop' do
   before do
     @driver = Selenium::WebDriver.for(
         :remote,
-        url: "http://#{ARGV[0]}:30002/wd/hub",
+        url: "http://192.168.64.15:30002/wd/hub",
         desired_capabilities: :chrome)
-    @driver.navigate.to "http://#{ARGV[0]}:#{ARGV[1]}"
+    @driver.navigate.to "http://192.168.64.15:#{ARGV[1]}"
     #@driver.manage.timeouts.implicit_wait = 30
   end
 
