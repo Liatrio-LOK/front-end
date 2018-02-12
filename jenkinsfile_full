@@ -36,7 +36,7 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
             sh 'gem install minitest selenium-webdriver'
           }
           stage('run test') {
-            sh 'ruby front-end-test-grid.rb 30011'
+            sh 'ruby front-end-test-grid.rb $(minishift ip) 30011'
           }
         }
     }
@@ -53,7 +53,7 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
         container('selenium') {
           stage('run test') {
             sh 'sleep 5'
-            sh 'ruby front-end-test-grid.rb 30012'
+            sh 'ruby front-end-test-grid.rb $(minishift ip) 30012'
             input 'promote to staging?'
           }
         }
@@ -71,7 +71,7 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
         container('selenium') {
           stage('run test') {
             sh 'sleep 5'
-            sh 'ruby front-end-test-grid.rb 30013'
+            sh 'ruby front-end-test-grid.rb $(minishift ip) 30013'
             input 'promote to prod?'
           }
         }
@@ -89,7 +89,7 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
         container('selenium') {
           stage('run test') {
             sh 'sleep 5'
-            sh 'ruby front-end-test-grid.rb 30014'
+            sh 'ruby front-end-test-grid.rb $(minishift ip) 30014'
           }
         }
     }
