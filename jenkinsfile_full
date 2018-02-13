@@ -1,7 +1,11 @@
 #!groovy
+minishift_ip = env.MINISHIFT_IP
 podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
     containerTemplate(name: 'selenium', image: 'ruby', ttyEnabled: true, command: 'cat'),
   ]) {
+  node {
+    minishift_ip = env.MINISHIFT_IP
+  }
   node ('slave-pod') {
     stage('Build Image') {
         openshiftBuild (
@@ -36,7 +40,7 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
             sh 'gem install minitest selenium-webdriver'
           }
           stage('run test') {
-            sh 'ruby front-end-test-grid.rb 30011'
+            sh "ruby front-end-test-grid.rb ${minishift_ip} 30011"
             input 'promote to prod?'
           }
         }
@@ -54,7 +58,7 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
         container('selenium') {
           stage('run test') {
             sh 'sleep 5'
-            sh 'ruby front-end-test-grid.rb 30014'
+            sh "ruby front-end-test-grid.rb ${minishift_ip} 30014"
           }
         }
     }
