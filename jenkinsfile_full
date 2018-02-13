@@ -49,6 +49,7 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
         openshiftTag (
             srcStream: 'front-end',
             srcTag: 'dev',
+            namespace: 'dev',
             destinationStream: 'front-end',
             destinationTag: 'prod',
             destinationNamespace: 'prod'

@@ -17,7 +17,7 @@ describe 'Sock-Shop' do
 
   describe 'test title' do
     it 'should show WeaveSocks title' do
-      #assert @driver.title == 'WeaveSocks'
+      assert @driver.title == 'WeaveSocks'
     end
   end
 
