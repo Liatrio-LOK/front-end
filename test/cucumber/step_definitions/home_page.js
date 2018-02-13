@@ -1,14 +1,12 @@
-var {Then, When} = require('cucumber');
-var assert = require('assert');
-var fs = require('fs');
-var mzFs = require('mz/fs')
-var seleniumWebdriver = require('selenium-webdriver');
+  'use strict';
+  var {defineSupportCode} = require('cucumber');
+  var assert = require('assert');
 
+  defineSupportCode(function({Given, Then, When}) {
 
-When(/^I navigate to Sock Shop web page/, function (callback) {
-           callback(null, 'pending');
-});
+    Given(/^I navigate to Sock Shop web page$/, function () {
+    });
 
-Then(/I should see WeaveSocks page title/, function (callback) {
-           callback(null, 'pending');
-});
+    When(/^I should see WeaveSocks page title$/, function () {
+    });
+  });
