@@ -1,66 +1,66 @@
 #!groovy
 podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
-    containerTemplate(name: 'selenium', image: 'ruby', ttyEnabled: true, command: 'cat'),
-  ]) {
-  node {
-    minishift_ip = env.MINISHIFT_IP
-  }
-  node ('slave-pod') {
-    stage('Build Image') {
-        openshiftBuild (
-            namespace: 'jenkins',
-            bldCfg: 'front-end-build',
-            checkForTriggeredDeployments: 'true',
-            showBuildLogs: 'true',
-            verbose: 'false'
-        )
+        containerTemplate(name: 'selenium', image: 'ruby', ttyEnabled: true, command: 'cat'),
+]) {
+    node {
+        minishift_ip = env.MINISHIFT_IP
     }
-    stage('Verify Build') {
-            openshiftVerifyBuild (
-            namespace: 'jenkins',
-            bldCfg: 'front-end-build',
-            checkForTriggeredDeployments: 'true',
-            verbose: 'true'
-        )
-    }
-    stage('Promote to dev') {
-        openshiftTag (
-            srcStream: 'front-end',
-            srcTag: 'latest',
-            destinationStream: 'front-end',
-            destinationTag: 'dev',
-            destinationNamespace: 'dev'
-        )
-    }
-    stage('Smoke test dev') {
-        checkout scm
-        container('selenium') {
-          stage('prep pod') {
-            sh 'gem install minitest selenium-webdriver'
-          }
-          stage('run test') {
-            sh "ruby front-end-test-grid.rb ${minishift_ip} 30011"
-            input 'promote to prod?'
-          }
+    node('slave-pod') {
+        stage('Build Image') {
+            openshiftBuild(
+                    namespace: 'jenkins',
+                    bldCfg: 'front-end-build',
+                    checkForTriggeredDeployments: 'true',
+                    showBuildLogs: 'true',
+                    verbose: 'false'
+            )
+        }
+        stage('Verify Build') {
+            openshiftVerifyBuild(
+                    namespace: 'jenkins',
+                    bldCfg: 'front-end-build',
+                    checkForTriggeredDeployments: 'true',
+                    verbose: 'true'
+            )
+        }
+        stage('Promote to dev') {
+            openshiftTag(
+                    srcStream: 'front-end',
+                    srcTag: 'latest',
+                    destinationStream: 'front-end',
+                    destinationTag: 'dev',
+                    destinationNamespace: 'dev'
+            )
+        }
+
+        stage('Acceptance testing') {
+            checkout scm
+            container('selenium') {
+                stage('run tests') {
+                    sh 'npm install --save-dev cucumber'
+                    sh './node_modules/.bin/cucumber-js ./test/cucumber/features -r ./test/cucumber/step_definitions'
+                    input 'promote image?'
+                }
+            }
+        }
+
+        stage('Promote to prod') {
+            openshiftTag(
+                    srcStream: 'front-end',
+                    srcTag: 'dev',
+                    namespace: 'dev',
+                    destinationStream: 'front-end',
+                    destinationTag: 'prod',
+                    destinationNamespace: 'prod'
+            )
+        }
+        stage('Smoke test prod') {
+            container('selenium') {
+                stage('run test') {
+                    sh 'sleep 5'
+                    sh "ruby front-end-test-grid.rb ${minishift_ip} 30014"
+                }
+            }
         }
     }
-    stage('Promote to prod') {
-        openshiftTag (
-            srcStream: 'front-end',
-            srcTag: 'dev',
-            namespace: 'dev',
-            destinationStream: 'front-end',
-            destinationTag: 'prod',
-            destinationNamespace: 'prod'
-        )
-    }
-    stage('Smoke test prod') {
-        container('selenium') {
-          stage('run test') {
-            sh 'sleep 5'
-            sh "ruby front-end-test-grid.rb ${minishift_ip} 30014"
-          }
-        }
-    }
-  }
 }
