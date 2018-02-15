@@ -1,12 +1,12 @@
 #!groovy
 podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
-        containerTemplate(name: 'selenium', image: 'ruby', ttyEnabled: true, command: 'cat'),
+        containerTemplate(name: 'selenium', image: 'node', ttyEnabled: true, command: 'cat'),
 ]) {
     node {
         minishift_ip = env.MINISHIFT_IP
     }
     node('slave-pod') {
-        stage('Build Image') {
+        /*stage('Build Image') {
             openshiftBuild(
                     namespace: 'jenkins',
                     bldCfg: 'front-end-build',
@@ -31,20 +31,21 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
                     destinationTag: 'dev',
                     destinationNamespace: 'dev'
             )
-        }
+        }*/
 
         stage('Acceptance testing') {
             checkout scm
             container('selenium') {
                 stage('run tests') {
-                    sh 'npm install --save-dev cucumber'
-                    sh './node_modules/.bin/cucumber-js ./test/cucumber/features -r ./test/cucumber/step_definitions'
+                    //sh 'npm install --save-dev cucumber'
+                    sh 'npm install'
+                    sh "./node_modules/.bin/cucumber-js ./test/cucumber/features -r ./test/cucumber/step_definitions ${minishift_ip} 30011"
                     input 'promote image?'
                 }
             }
         }
 
-        stage('Promote to prod') {
+        /*stage('Promote to prod') {
             openshiftTag(
                     srcStream: 'front-end',
                     srcTag: 'dev',
@@ -61,6 +62,6 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
                     sh "ruby front-end-test-grid.rb ${minishift_ip} 30014"
                 }
             }
-        }
+        }*/
     }
 }
