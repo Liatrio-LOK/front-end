@@ -12,11 +12,13 @@
 
   defineSupportCode(function({Given, Then, When}) {
 
-    Given(/^I navigate to Sock Shop web page$/, function () {
+    Given(/^I navigate to Sock Shop web page$/, function (callback) {
       driver.get('https://www.google.com/');
+      callback();
     });
 
-    When(/^I should see WeaveSocks page title$/, function () {
+    When(/^I should see WeaveSocks page title$/, function (callback) {
       console.log(driver.getTitle());
+      callback();
     });
   });
