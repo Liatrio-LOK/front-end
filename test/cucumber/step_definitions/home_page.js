@@ -14,11 +14,11 @@
       callback();
     });
 
-    When(/^I should see WeaveSocks page title$/, function (callback) {
-      console.log("start");
+    When(/^I should see WeaveSocks page title$/, function () {
+      driver.get('https://www.google.com/');
+      /*console.log("start");
       console.log(driver.getTitle());
       console.log(driver.getCurrentUrl());
-      console.log("finish");
-      callback();
+      console.log("finish");*/
     });
   });
