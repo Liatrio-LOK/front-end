@@ -1,12 +1,12 @@
 #!groovy
 podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
-        containerTemplate(name: 'selenium', image: 'node', ttyEnabled: true, command: 'cat'),
+        containerTemplate(name: 'node', image: 'node', ttyEnabled: true, command: 'cat'),
 ]) {
     node {
         minishift_ip = env.MINISHIFT_IP
     }
     node('slave-pod') {
-        /*stage('Build Image') {
+        stage('Build Image') {
             openshiftBuild(
                     namespace: 'jenkins',
                     bldCfg: 'front-end-build',
@@ -23,7 +23,7 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
                     verbose: 'true'
             )
         }
-        stage('Promote to dev') {
+        stage('Deploy to Dev') {
             openshiftTag(
                     srcStream: 'front-end',
                     srcTag: 'latest',
@@ -31,13 +31,11 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
                     destinationTag: 'dev',
                     destinationNamespace: 'dev'
             )
-        }*/
-
-        stage('Acceptance testing') {
+        }
+        stage('Cucumber acceptance testing') {
             checkout scm
-            container('selenium') {
+            container('node') {
                 stage('run tests') {
-                    //sh 'npm install --save-dev cucumber'
                     sh 'npm install'
                     sh "./node_modules/.bin/cucumber-js ./test/cucumber/features -r ./test/cucumber/step_definitions ${minishift_ip} 30011"
                     input 'promote image?'
@@ -45,7 +43,7 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
             }
         }
 
-        /*stage('Promote to prod') {
+        stage('Promote to Prod') {
             openshiftTag(
                     srcStream: 'front-end',
                     srcTag: 'dev',
@@ -55,13 +53,13 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
                     destinationNamespace: 'prod'
             )
         }
-        stage('Smoke test prod') {
+        stage('Smoke test Prod') {
             container('selenium') {
                 stage('run test') {
                     sh 'sleep 5'
                     sh "ruby front-end-test-grid.rb ${minishift_ip} 30014"
                 }
             }
-        }*/
+        }
     }
 }
