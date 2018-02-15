@@ -18,7 +18,9 @@
     });
 
     When(/^I should see WeaveSocks page title$/, function (callback) {
+      console.log("start");
       console.log(driver.getTitle());
+      console.log("finish");
       callback();
     });
   });
