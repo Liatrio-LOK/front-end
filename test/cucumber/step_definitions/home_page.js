@@ -17,7 +17,6 @@
     });
 
     When(/^I should see WeaveSocks page title$/, function () {
-      driver.findElement(webdriver.By.name('title'));
       console.log(driver.getTitle());
     });
   });
