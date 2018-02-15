@@ -1,8 +1,0 @@
-{
-  "steps": "./test/cucumber/step_definitions/home_page.js",
-  "pageObjects": "./page-objects",
-  "sharedObjects": "./shared-objects",
-  "reports": "./reports",
-  "browser": "chrome",
-  "timeout": 10000
-}
