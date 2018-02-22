@@ -22,7 +22,8 @@
     "finalhandler": "^0.4.1",
     "morgan": "^1.7.0",
     "prom-client": "^6.3.0",
-    "serve-static": "^1.10.2"
+    "serve-static": "^1.10.2",
+    "request": "^1.0.0"
   },
   "devDependencies": {
     "chromedriver": "^2.12.0",
