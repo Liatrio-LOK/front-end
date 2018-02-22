@@ -73,4 +73,5 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
         }
     }
   }*/
+  }
 }
