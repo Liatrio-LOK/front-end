@@ -1,11 +1,29 @@
 #!groovy
-podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
-    containerTemplate(name: 'selenium', image: 'ruby', ttyEnabled: true, command: 'cat'),
-  ]) {
-  node {
-    minishift_ip = env.MINISHIFT_IP
-  }
-  node ('slave-pod') {
+pipeline {
+    agent {
+        kubernetes {
+            containerTemplate {
+                name 'selenium'
+                image 'ruby'
+                ttyEnabled true
+                command 'cat'
+            }
+        }
+    }
+    stages {
+      stage('Verify Build') {
+        steps {
+          openshiftVerifyBuild (
+              namespace: 'jenkins',
+              bldCfg: 'front-end-build',
+              checkForTriggeredDeployments: 'true',
+              verbose: 'true'
+          )
+        }
+      }
+    }
+}
+  /*node ('slave-pod') {
     stage('Build Image') {
         openshiftBuild (
             namespace: 'jenkins',
@@ -13,14 +31,6 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
             checkForTriggeredDeployments: 'true',
             showBuildLogs: 'true',
             verbose: 'false'
-        )
-    }
-    stage('Verify Build') {
-            openshiftVerifyBuild (
-            namespace: 'jenkins',
-            bldCfg: 'front-end-build',
-            checkForTriggeredDeployments: 'true',
-            verbose: 'true'
         )
     }
     stage('Promote to dev') {
@@ -62,5 +72,4 @@ podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
           }
         }
     }
-  }
-}
+  }*/
