@@ -1,39 +1,39 @@
 #!groovy
-pipeline {
-    agent {
-        kubernetes {
-            containerTemplate {
-                name 'selenium'
-                image 'ruby'
-                ttyEnabled true
-                command 'cat'
-            }
-        }
-    }
-    stages {
-      stage('Verify Build') {
-        steps {
+podTemplate(label: 'slave-pod', cloud: 'openshift', containers: [
+        containerTemplate(name: 'ruby', image: 'ruby', ttyEnabled: true, command: 'cat'),
+]) {
+  node ('slave-pod') {
+    //stage('Build Image') {
+        //openshiftBuild (
+            //namespace: 'jenkins',
+            //bldCfg: 'front-end-build',
+            //checkForTriggeredDeployments: 'true',
+            //showBuildLogs: 'true',
+            //verbose: 'false'
+        //)
+    //}
+    stage('Verify Build') {
+        try {
           openshiftVerifyBuild (
               namespace: 'jenkins',
               bldCfg: 'front-end-build',
               checkForTriggeredDeployments: 'true',
               verbose: 'true'
           )
+          currentBuild.result = "SUCCESS"
         }
+        catch (e) {
+          currentBuild.result = "FAILED"
+        }
+    }
+    stage('Verify Build') {
+      if (currentBuild.result == "FAILED") {
+        sh 'echo failed'
+      } else {
+        sh 'echo success'
       }
     }
-}
-  /*node ('slave-pod') {
-    stage('Build Image') {
-        openshiftBuild (
-            namespace: 'jenkins',
-            bldCfg: 'front-end-build',
-            checkForTriggeredDeployments: 'true',
-            showBuildLogs: 'true',
-            verbose: 'false'
-        )
-    }
-    stage('Promote to dev') {
+    /*stage('Promote to dev') {
         openshiftTag (
             srcStream: 'front-end',
             srcTag: 'latest',
@@ -73,3 +73,4 @@ pipeline {
         }
     }
   }*/
+}
